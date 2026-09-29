@@ -1,0 +1,105 @@
+﻿# ============================================================
+# SOURCEAI / SOURCEBUDDY BACKEND REQUIREMENTS
+# Python 3.12
+# ============================================================
+
+# -------------------------
+# API / Web
+# -------------------------
+fastapi
+uvicorn[standard]
+python-multipart
+
+# -------------------------
+# Configuration / Validation
+# -------------------------
+pydantic[email]
+pydantic-settings
+python-dotenv
+
+# -------------------------
+# Database
+# -------------------------
+sqlalchemy
+asyncpg
+alembic
+
+# -------------------------
+# Authentication / Security
+# -------------------------
+PyJWT
+bcrypt
+passlib[bcrypt]
+
+# -------------------------
+# HTTP / Async Networking
+# -------------------------
+httpx
+aiohttp
+
+# -------------------------
+# Search
+# -------------------------
+ddgs
+
+# -------------------------
+# Crawling / Browser
+# -------------------------
+playwright
+beautifulsoup4
+trafilatura
+readability-lxml
+scrapy
+crawlee
+
+# -------------------------
+# AI / LLM Providers
+# -------------------------
+groq
+openai
+
+# -------------------------
+# Structured Data / Parsing
+# -------------------------
+lxml
+orjson
+
+# -------------------------
+# Redis / Cache
+# -------------------------
+redis
+
+# -------------------------
+# OpenSearch
+# -------------------------
+opensearch-py
+
+# -------------------------
+# ScrapeGraphAI
+# -------------------------
+scrapegraphai
+
+# -------------------------
+# Background Jobs / Scheduling
+# -------------------------
+apscheduler
+
+# -------------------------
+# Observability / Logging
+# -------------------------
+structlog
+
+# -------------------------
+# Testing
+# -------------------------
+pytest
+pytest-asyncio
+pytest-cov
+pytest-httpx
+
+# -------------------------
+# Development / Static Analysis
+# -------------------------
+ruff
+mypy
+psycopg2-binary

@@ -1,0 +1,93 @@
+# Environment / secrets
+.env
+.env.*
+**/.env
+**/.env.*
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Node
+node_modules/
+dist/
+build/
+
+# Logs
+*.log
+logs/
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Test/cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Framework build output
+.next/
+**/.next/
+
+# Generated API/debug artifacts
+openapi_live.json
+openapi_paths.json
+openapi_schemas.json
+
+# Frontend build/dependencies
+**/node_modules/
+**/dist/
+**/.next/
+
+# Local/debug artifacts
+tree.txt
+alembic.ini.bak
+healthy_omniroute_models.json
+nemotron_test.json
+openapi_live.json
+openapi_paths.json
+openapi_schemas.json
+
+# Local diagnostic scripts
+debug_*.py
+diag_*.py
+e2e_direct.py
+test_nemotron.py
+
+# Unused/legacy frontend
+frontend/
+
+routes.txt
+
+
+# Backup files
+*.bak
+
+# Runtime crawler / queue state
+sourceai/storage/key_value_stores/default/*
+sourceai/storage/request_queues/default/*
+
+# Diagnostic/generated artifacts
+routes.txt
+
+# Backup files
+*.bak
+
+# Runtime crawler / queue state
+sourceai/storage/key_value_stores/default/*
+sourceai/storage/request_queues/default/*
+
+# Ignore only the unused root lockfile
+/package-lock.json

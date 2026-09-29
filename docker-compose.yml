@@ -1,0 +1,105 @@
+# docker-compose.yml
+#
+# SourceAI full stack:
+#   - postgres  (required)
+#   - redis     (optional, graceful degradation)
+#   - searxng   (optional, graceful degradation)
+#   - api       (SourceAI backend)
+#
+# Usage:
+#   cp .env.example .env
+#   docker compose up -d
+#   docker compose logs -f api
+#
+# Health:
+#   curl http://localhost:8000/health
+#   curl http://localhost:8000/health/ready
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: sourceai-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-sourceai}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - sourceai-pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: sourceai-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - sourceai-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  searxng:
+    image: searxng/searxng:latest
+    container_name: sourceai-searxng
+    restart: unless-stopped
+    ports:
+      - "${SEARXNG_PORT:-8888}:8080"
+    volumes:
+      - ./sourceai/infrastructure/searxng/settings.yml:/etc/searxng/settings.yml:ro
+      - ./sourceai/infrastructure/searxng/limiter.toml:/etc/searxng/limiter.toml:ro
+    environment:
+      - SEARXNG_BASE_URL=http://localhost:${SEARXNG_PORT:-8888}/
+      - SEARXNG_SECRET_KEY=${SEARXNG_SECRET_KEY:-change_me_in_production}
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    profiles: ["full"]      # start with: docker compose --profile full up -d
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sourceai-api
+    restart: unless-stopped
+    ports:
+      - "${API_PORT:-8000}:8000"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-sourceai}
+      REDIS_URL: redis://redis:6379/0
+      SEARXNG_BASE_URL: http://searxng:8080
+      SEARXNG_ENABLED: ${SEARXNG_ENABLED:-false}
+      AI_ENABLED: ${AI_ENABLED:-false}
+      JWT_SECRET: ${JWT_SECRET:-change_me_in_production}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      GROQ_MODEL: ${GROQ_MODEL:-}
+      GROQ_BASE_URL: ${GROQ_BASE_URL:-https://api.groq.com/openai/v1}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      OPENROUTER_MODEL: ${OPENROUTER_MODEL:-}
+      LLM_PROVIDER_ORDER: ${LLM_PROVIDER_ORDER:-groq,openrouter,omniroute}
+      WATCHLIST_CHECK_INTERVAL_MINUTES: ${WATCHLIST_CHECK_INTERVAL_MINUTES:-30}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health/live"]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+
+volumes:
+  sourceai-pg-data:
+  sourceai-redis-data:

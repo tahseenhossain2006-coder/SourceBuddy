@@ -1,0 +1,5 @@
+# Rate-limiting is disabled because SourceAI is the only client.
+# Do not enable unless SearXNG is exposed to the public internet.
+
+[botdetection]
+enabled = false
